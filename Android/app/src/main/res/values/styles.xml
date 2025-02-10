@@ -8,6 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppThemeNoBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+    </style>
 
 
     <style name="AppTheme_picker" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -21,37 +28,18 @@
 
 
     <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+        false
+        true
+        true
+        @android:color/transparent</style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-
-    <style name="AppTheme2" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorControlNormal">#ffffff</item>
-        <item name="colorControlActivated">@color/accent</item>
-        <item name="colorControlHighlight">@color/accent</item>
-        <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
-        <item name="android:autoCompleteTextViewStyle">@style/RobotoAutoCompleteTextViewStyle</item>
-        <item name="android:editTextStyle">@style/RobotoEditTextStyle</item>
+    <style name="ToolbarText" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">18sp</item>
     </style>
-
-    <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="RobotoAutoCompleteTextViewStyle" parent="android:Widget.AutoCompleteTextView">
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <style name="RobotoEditTextStyle" parent="android:Widget.EditText">
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
-
-    <color name="accent">#ffffff</color>
 
 
     <style name="TextView">
@@ -83,5 +71,35 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
+    <!--AlertDialog SignOut-->
+    <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/colorPrimary</item>
+    </style>
 
+    <!-- Full Profile Image Theme-->
+    <style name="FullProfileImageTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:colorPrimary">@color/black</item>
+    </style>
+
+    <style name="RestaurantCardView" parent="CardView">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_margin">2dp</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPadding">6dp</item>
+    </style>
+
+    <style name="OtpWidget.OtpView" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="DialogStyle" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+
+        <item name="android:isScrollContainer">true</item>
+    </style>
 </resources>

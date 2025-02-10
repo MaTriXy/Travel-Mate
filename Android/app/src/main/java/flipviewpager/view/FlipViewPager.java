@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -20,8 +21,6 @@ import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Scroller;
-
-import java.util.HashMap;
 
 /**
  * onInterceptTouchEvent() modified by Tom-Philipp Seifert to allow delegation of click events
@@ -36,24 +35,21 @@ public class FlipViewPager extends FrameLayout {
     private static final int FLIP_SHADE_ALPHA = 130;
     private static final int INVALID_POINTER = -1;
 
-    private final HashMap<Integer, PageItem> pages = new HashMap<>();
+    private final SparseArray<PageItem> mPages = new SparseArray<>();
 
     private final PageItem mPrev = new PageItem();
     private final PageItem mCurrent = new PageItem();
     private final PageItem mNext = new PageItem();
-
-    private Scroller mScroller;
-    private VelocityTracker mVelocityTracker;
-    private EdgeEffect mLeftEdgeEffect;
-    private EdgeEffect mRightEdgeEffect;
-
     private final Rect mRightRect = new Rect();
     private final Rect mLeftRect = new Rect();
     private final Camera mCamera = new Camera();
     private final Matrix mMatrix = new Matrix();
     private final Paint mShadePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mShinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+    private Scroller mScroller;
+    private VelocityTracker mVelocityTracker;
+    private EdgeEffect mLeftEdgeEffect;
+    private EdgeEffect mRightEdgeEffect;
     private int mMinimumVelocity;
     private int mMaximumVelocity;
 
@@ -62,8 +58,8 @@ public class FlipViewPager extends FrameLayout {
     private int mRow = 0;
     private int mMaxItems = 0;
 
-    private boolean flipping;
-    private boolean overFlipping;
+    private boolean mFlipping;
+    private boolean mOverFlipping;
 
     private float mFlipDistance = -1;
     private int mTouchSlop;
@@ -72,24 +68,12 @@ public class FlipViewPager extends FrameLayout {
     private float mLastMotionY = -1;
     private int mActivePointerId = INVALID_POINTER;
 
-    private OnChangePageListener onChangePageListener;
+    private OnChangePageListener mOnChangePageListener;
+    private ListAdapter mAdapter;
 
-    // Internal interface to store page position
-    public interface OnChangePageListener {
-        void onFlipped(int page);
-    }
-
-    class PageItem {
-        View pageView;
-
-        void recycle() {
-            removeView(pageView);
-        }
-
-        void fill(int i) {
-            pageView = pages.get(i).pageView;
-            addView(pageView);
-        }
+    public FlipViewPager(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
     }
 
     private void setFlipDistance(float flipDistance) {
@@ -112,11 +96,6 @@ public class FlipViewPager extends FrameLayout {
         }
 
         invalidate();
-    }
-
-    public FlipViewPager(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
     }
 
     private void init() {
@@ -143,7 +122,7 @@ public class FlipViewPager extends FrameLayout {
         if (!mScroller.isFinished() && mScroller.computeScrollOffset())
             setFlipDistance(mScroller.getCurrY());
 
-        if (flipping || !mScroller.isFinished()) {
+        if (mFlipping || !mScroller.isFinished()) {
             // Drawing prev half
             canvas.save();
             canvas.clipRect(mLeftRect);
@@ -162,8 +141,8 @@ public class FlipViewPager extends FrameLayout {
         } else {
             mScroller.abortAnimation();
             drawChild(canvas, mCurrent.pageView, 0);
-            if (onChangePageListener != null)
-                onChangePageListener.onFlipped(mCurrentPageIndex);
+            if (mOnChangePageListener != null)
+                mOnChangePageListener.onFlipped(mCurrentPageIndex);
         }
         if (drawEdges(canvas)) {
             invalidate();
@@ -171,7 +150,7 @@ public class FlipViewPager extends FrameLayout {
     }
 
     public void setOnChangePageListener(OnChangePageListener onChangePageListener) {
-        this.onChangePageListener = onChangePageListener;
+        this.mOnChangePageListener = onChangePageListener;
     }
 
     private void drawFlippingHalf(Canvas canvas) {
@@ -214,7 +193,7 @@ public class FlipViewPager extends FrameLayout {
             return false;
         }
 
-        if (action != MotionEvent.ACTION_DOWN && !flipping) return false;
+        if (action != MotionEvent.ACTION_DOWN && !mFlipping) return false;
 
         switch (action) {
             case MotionEvent.ACTION_MOVE:
@@ -252,9 +231,9 @@ public class FlipViewPager extends FrameLayout {
                 break;
         }
 
-        if (!flipping)
+        if (!mFlipping)
             trackVelocity(ev);
-        return !flipping;
+        return !mFlipping;
     }
 
     private void checkIfChildWasClicked(MotionEvent ev, final View childView) {
@@ -278,7 +257,7 @@ public class FlipViewPager extends FrameLayout {
      * @return true if the points are within view bounds, false otherwise
      */
     private boolean isPointInsideView(float x, float y, View view) {
-        int location[] = new int[2];
+        int[] location = new int[2];
         view.getLocationOnScreen(location);
         int viewX = location[0];
         int viewY = location[1];
@@ -299,7 +278,7 @@ public class FlipViewPager extends FrameLayout {
                 mActivePointerId = ev.getPointerId(0);
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (!flipping) {
+                if (!mFlipping) {
                     final int pointerIndex = ev.findPointerIndex(mActivePointerId);
                     if (pointerIndex == -1) {
                         mActivePointerId = INVALID_POINTER;
@@ -316,7 +295,7 @@ public class FlipViewPager extends FrameLayout {
                         mLastMotionY = y;
                     }
                 }
-                if (flipping) {
+                if (mFlipping) {
                     int activePointerIndex = ev.findPointerIndex(mActivePointerId);
                     if (activePointerIndex == -1) {
                         mActivePointerId = INVALID_POINTER;
@@ -335,18 +314,18 @@ public class FlipViewPager extends FrameLayout {
                     boolean isOverFlipping = mFlipDistance < minFlipDistance || mFlipDistance > maxFlipDistance;
 
                     if (isOverFlipping) {
-                        this.overFlipping = true;
-                        toggleFlip(flipping);
+                        this.mOverFlipping = true;
+                        toggleFlip(mFlipping);
                         setFlipDistance(calculate(mFlipDistance, minFlipDistance, maxFlipDistance));
-                    } else if (this.overFlipping) {
-                        this.overFlipping = false;
+                    } else if (this.mOverFlipping) {
+                        this.mOverFlipping = false;
                     }
                 }
                 break;
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                if (flipping) {
+                if (mFlipping) {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                     flipToPage(getNextPage((int) mVelocityTracker.getXVelocity(mActivePointerId)));
                     mActivePointerId = INVALID_POINTER;
@@ -361,7 +340,7 @@ public class FlipViewPager extends FrameLayout {
                         if (clickListener != null) {
                             if (mCurrentPageIndex == 1 && isLeftClicked(ev)) {
                                 clickListener.onItemClick(null, this, mRow * 2, -1);
-                            } else if (mCurrentPageIndex == 1 && isRightClicked(ev) && mMaxItems > (mRow * 2 + 1))
+                            } else if (mCurrentPageIndex == 1 && isRightClicked(ev) && mMaxItems > (mRow * 2))
                                 clickListener.onItemClick(null, this, mRow * 2 + 1, -1);
                         }
                         return false;
@@ -400,11 +379,10 @@ public class FlipViewPager extends FrameLayout {
     }
 
     private void toggleFlip(boolean isFlipping) {
-        this.flipping = isFlipping;
+        this.mFlipping = isFlipping;
         // To prevent parent listview from scrolling
         getParent().requestDisallowInterceptTouchEvent(isFlipping);
     }
-
 
     private void drawFlippingShadeShine(Canvas canvas) {
         if (getDegreesDone() < 90) {
@@ -492,29 +470,31 @@ public class FlipViewPager extends FrameLayout {
         }
     }
 
-    private ListAdapter adapter;
-
     public ListAdapter getAdapter() {
-        return adapter;
+        return mAdapter;
     }
 
     public void setAdapter(ListAdapter adapter, int activePage, int row, int maxItems) {
-        this.adapter = adapter;
+        this.mAdapter = adapter;
         removeAllViews();
         // For case we're showing row with less items than we storing
-        if (pages.size() > adapter.getCount()) pages.clear();
+        if (mPages.size() > adapter.getCount()) mPages.clear();
         for (int i = 0; i < adapter.getCount(); i++) {
-            PageItem item = pages.containsKey(i) ? pages.get(i) : new PageItem();
-            item.pageView = adapter.getView(i, pages.containsKey(i) ? pages.get(i).pageView : null, this);
-            pages.put(i, item);
+            PageItem item = mPages.get(i) != null ? mPages.get(i) : new PageItem();
+            item.pageView = adapter.getView(i, mPages.get(i) != null ? mPages.get(i).pageView : null, this);
+            mPages.put(i, item);
         }
-        mPageCount = pages.size();
+        mPageCount = mPages.size();
         mRow = row;
         mMaxItems = maxItems;
         mCurrentPageIndex = -1;
         mFlipDistance = -1;
         setFlipDistance(0);
-        mScroller.startScroll(0, (int) mFlipDistance, 0, (int) (activePage * FLIP_DISTANCE - mFlipDistance), getFlipDuration(0));
+        mScroller.startScroll(0,
+                (int) mFlipDistance,
+                0,
+                (int) (activePage * FLIP_DISTANCE - mFlipDistance),
+                getFlipDuration(0));
     }
 
     private void flipToPage(int page) {
@@ -522,5 +502,23 @@ public class FlipViewPager extends FrameLayout {
         endFlip();
         mScroller.startScroll(0, (int) mFlipDistance, 0, delta, getFlipDuration(delta));
         invalidate();
+    }
+
+    // Internal interface to store page position
+    public interface OnChangePageListener {
+        void onFlipped(int page);
+    }
+
+    class PageItem {
+        View pageView;
+
+        void recycle() {
+            removeView(pageView);
+        }
+
+        void fill(int i) {
+            pageView = mPages.get(i).pageView;
+            addView(pageView);
+        }
     }
 }

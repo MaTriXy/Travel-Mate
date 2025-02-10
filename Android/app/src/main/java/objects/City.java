@@ -1,72 +1,140 @@
 package objects;
 
-/**
- * Created by swati on 25/1/16.
- */
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 /**
  * Model class for city object
  */
-public class City {
-    private final String avatar;
-    private final String nickname;
-    private final String id;
-    private final String la;
-    private final String lo;
-    private final int background;
-    private final List<String> interests = new ArrayList<>();
+@Entity (tableName = "city")
+public class City implements Serializable {
 
-    /**
-     * Instantiates city object
-     *
-     * @param id         unique id for a city
-     * @param avatar     city image
-     * @param nickname   city name
-     * @param background Background color when card is opened
-     * @param lat        latitude of city
-     * @param lon        longitude of city
-     * @param interest   list of items when string is opened
-     */
-    public City(String id, String avatar, String nickname, int background, String lat, String lon, String... interest) {
-        this.avatar = avatar;
-        this.id = id;
-        this.la = lat;
-        this.lo = lon;
-        this.nickname = nickname;
-        this.background = background;
-        interests.addAll(Arrays.asList(interest));
+    @Ignore
+    public List<String> mInterests = new ArrayList<>();
+
+    @PrimaryKey
+    @NonNull
+    public String mId;
+    @ColumnInfo (name = "city_latitude")
+    public String mLatitude;
+    @ColumnInfo (name = "city_longitude")
+    public String mLongitude;
+    @ColumnInfo (name = "city_funfact")
+    public int mFunFactsCount;
+    @ColumnInfo (name = "city_background")
+    public int mBackgroundColor;
+    @ColumnInfo (name = "city_favourite")
+    public int mFavouriteCity;
+
+    @ColumnInfo(name = "city_avatar")
+    public String mAvatar;
+    @ColumnInfo (name = "city_nickname")
+    public String mNickname;
+    @ColumnInfo (name = "city_description")
+    public String mDescription;
+
+    public City() {
+    }
+
+    public City(@NonNull String mId, String mAvatar, String mNickname,
+                int funFactsCount, int color, String... interest) {
+        this.mAvatar = mAvatar;
+        this.mNickname = mNickname;
+        this.mId = mId;
+        this.mFunFactsCount = funFactsCount;
+        this.mBackgroundColor = color;
+        mInterests.addAll(Arrays.asList(interest));
+    }
+
+    public City(@NonNull String mId, String mAvatar, String mNickname, int funFactsCount,
+                int color, List<String> interests) {
+        this.mAvatar = mAvatar;
+        this.mNickname = mNickname;
+        this.mId = mId;
+        this.mFunFactsCount = funFactsCount;
+        this.mBackgroundColor = color;
+        mInterests.addAll(interests);
+    }
+
+    @Ignore
+    public City(String nickname, @NonNull String id) {
+        this.mNickname = nickname;
+        this.mId = id;
+    }
+
+    @Ignore
+    public City(@NonNull String id, String nickname, String avatar) {
+        this.mId = id;
+        this.mNickname = nickname;
+        this.mAvatar = avatar;
     }
 
     public String getAvatar() {
-        return avatar;
+        return mAvatar;
     }
 
     public String getNickname() {
-        return nickname;
+        return mNickname;
+    }
+
+    public String getDescription() {
+        return mDescription;
     }
 
     public String getId() {
-        return id;
+        return mId;
     }
 
-    public String getLa() {
-        return la;
+    public String getLatitude() {
+        return mLatitude;
     }
 
-    public String getLo() {
-        return lo;
-    }
-
-    public int getBackground() {
-        return background;
+    public String getLongitude() {
+        return mLongitude;
     }
 
     public List<String> getInterests() {
-        return interests;
+        return mInterests;
     }
 
+    public int getFunFactsCount() {
+        return mFunFactsCount;
+    }
+
+    public void setDescription(String mDescription) {
+        this.mDescription = mDescription;
+    }
+
+    public void setLatitude(String mLatitude) {
+        this.mLatitude = mLatitude;
+    }
+
+    public void setLongitude(String mLongitude) {
+        this.mLongitude = mLongitude;
+    }
+
+    public int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    public void setBackgroundColor(int mBackgroundColor) {
+        this.mBackgroundColor = mBackgroundColor;
+    }
+
+    public int getFavouriteCity() {
+        return mFavouriteCity;
+    }
+
+    public void setFavouriteCity(int mFavouriteCity) {
+        this.mFavouriteCity = mFavouriteCity;
+    }
 }

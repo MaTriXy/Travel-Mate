@@ -1,43 +1,42 @@
 package flipviewpager.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import android.util.SparseIntArray;
 
 /**
  * @author Yalantis
  */
 public class FlipSettings {
-    private final int defaultPage;
+    private final int mDefaultPage;
 
-    private final Map<Integer, Integer> pages = new HashMap<>();
+    private final SparseIntArray mPages = new SparseIntArray();
 
     private FlipSettings(int defaultPage) {
-        this.defaultPage = defaultPage;
+        this.mDefaultPage = defaultPage;
     }
 
     public void savePageState(int position, int page) {
-        pages.put(position, page);
+        mPages.put(position, page);
     }
 
     public Integer getPageForPosition(int position) {
-        return pages.containsKey(position) ? pages.get(position) : defaultPage;
+        return mPages.get(position, mDefaultPage);
     }
 
     public int getDefaultPage() {
-        return defaultPage;
+        return mDefaultPage;
     }
 
     public static class Builder {
 
-        private int defaultPage = 1;
+        private int mDefaultPage = 1;
 
         public Builder defaultPage() {
-            this.defaultPage = 1;
+            this.mDefaultPage = 1;
             return this;
         }
 
         public FlipSettings build() {
-            return new FlipSettings(defaultPage);
+            return new FlipSettings(mDefaultPage);
         }
     }
 }

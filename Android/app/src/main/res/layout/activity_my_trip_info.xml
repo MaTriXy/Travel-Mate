@@ -1,122 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activityMyTripInfo"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="tie.hackathon.travelguide.destinations.description.FinalCityInfo">
+    android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context="tie.hackathon.travelguide.destinations.description.FinalCityInfo">
+        android:layout_height="200dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <ImageView
-
-            android:id="@+id/image"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:contentDescription="@string/empty_description"
-            android:scaleType="centerCrop"
-            android:src="@drawable/delhi" />
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/colorPrimary"
+            app:toolbarId="@+id/toolbar">
 
+            <ImageView
+                android:id="@+id/city_image"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:contentDescription="@string/empty_description"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder_image"
+                android:visibility="gone"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_collapseMode="parallax" />
 
-        <TextView
-            android:id="@+id/head"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-bold"
-            android:padding="10dp"
-            android:text="@string/sample_state"
-            android:textColor="#000000"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <TextView
-            android:id="@+id/tname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-bold"
-            android:padding="10dp"
-            android:text="@string/sample_state"
-            android:textColor="#000000"
-            android:textSize="15sp" />
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/know_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_location_city_black"
+                app:layout_collapseMode="parallax"
+                android:tint="@color/white" />
 
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-bold"
-            android:padding="10dp"
-            android:text="@string/sample_state"
-            android:textColor="#000000"
-            android:textSize="15sp" />
+        </android.support.design.widget.CollapsingToolbarLayout>
 
+    </android.support.design.widget.AppBarLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="sans-serif-bold"
-            android:padding="10dp"
-            android:text="@string/photos_of_trip"
-            android:textColor="#000000"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+    <include layout="@layout/content_my_trip_info" />
 
-
-        <org.lucasr.twowayview.TwoWayView
-            android:id="@+id/lv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawSelectorOnTop="false"
-            android:orientation="horizontal" />
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="sans-serif-bold"
-            android:padding="10dp"
-            android:text="@string/friends_of_trip"
-            android:textColor="#000000"
-            android:textSize="25sp"
-            android:textStyle="bold" />
-
-
-        <adapters.NestedListView
-            android:id="@+id/friendlist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true" />
-
-        <AutoCompleteTextView
-            android:id="@+id/fname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="#000000"
-            android:ems="10"
-            android:hint="@string/prompt_friend_name"
-            android:maxLength="1"
-            android:padding="10dp"
-            android:popupBackground="#ffffff"
-            android:textColor="#000000"
-            android:textColorHint="#000000" />
-
-
-        <com.dd.processbutton.FlatButton
-            android:id="@+id/newfrriend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@color/colorPrimary"
-            android:text="@string/add_friend"
-            android:textColor="#ffffff" />
-
-
-    </LinearLayout>
-</ScrollView>
+</android.support.design.widget.CoordinatorLayout>
